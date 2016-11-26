@@ -217,7 +217,6 @@ void MyNetWork::requestSong(const QString &str)//请求歌曲
     connect(reply1,SIGNAL(finished()),&loop1,SLOT(quit()));
     loop1.exec();
 ///
-    qDebug()<<reply1->error();
 
    if(reply1->error()==QNetworkReply::NoError)
    {
@@ -300,7 +299,6 @@ void MyNetWork::requestlrc(const QString &lrcname,qint64 totaltime,const QString
     QJsonObject obj02= array0.at(0).toObject();
     QString hash= obj02.value("FileHash").toString();
 
-    qDebug()<<hash;
     QNetworkRequest requestlrc1;
     QNetworkAccessManager mangerlrc1;
     requestlrc1.setUrl(QUrl(KGLrcPart1.arg(songname).arg(totaltime).arg(hash)));
