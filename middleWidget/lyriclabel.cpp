@@ -34,7 +34,7 @@ LyricLabel::LyricLabel(bool touch, QWidget *parent)
 
     m_lyric = new Lyric();
     m_lrcFont =QFont("微软雅黑",14,QFont::Medium);
-    m_lrcHightLight = QColor(255, 220, 26);
+    m_lrcHightLight = QColor(255,40,80);
     connect(this, SIGNAL(changeTo(int)), this, SLOT(changeToEvent(int)));
 
     m_menu = new QMenu;
