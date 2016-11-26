@@ -415,8 +415,6 @@ bool AbstractWheelWidget::event(QEvent *e)
                     m_currentItem = ic-1;
             }
 
-
-
             if (m_doSignal)//只有触发信号的滚动才进行,而且这种是人为滚动
             {
                 //开始滚动
