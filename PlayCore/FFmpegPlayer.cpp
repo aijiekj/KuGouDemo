@@ -18,6 +18,7 @@ static int vol=80;
 static int	audioStream;
 static int  changeValue;
 static bool isBuffering;
+static int isquit=0;
 
 static AVCodecContext	*pCodecCtx;
 static AVCodec			*pCodec;
@@ -121,6 +122,7 @@ void FFmpegPlayer::setMedia(const QString str)
     stop();
     m_path=str;
     start();
+   // setPriority(QThread::HighestPriority);
 }
 
 void FFmpegPlayer::pause()
@@ -132,12 +134,13 @@ void FFmpegPlayer::pause()
 
 void FFmpegPlayer::stop()
 {
-    pause();
-    terminate();
-    wait(100);
-
-    FreeAllocMemory();
+    isquit=1;
+   // pause();
     m_path="";
+    Sleep(100);
+
+   // FreeAllocMemory();
+
     audio_len=0;
     audio_pos=NULL;
     audio_buf_index=0;
@@ -174,6 +177,7 @@ PlayerStatus FFmpegPlayer::getPlayerStatus() const
 
 void FFmpegPlayer::run()
 {
+    isquit=0;
     emit sig_CurrentMediaChange(m_path);
     pFormatCtx = avformat_alloc_context();
     pFormatCtx->interrupt_callback.callback = interrupt_cb;//--------注册回调函数
@@ -193,8 +197,6 @@ void FFmpegPlayer::run()
         emit sig_CurrentMediaError();
         return ;
     }
-    // Dump valid information onto standard error
-    av_dump_format(pFormatCtx, 0, m_path.toStdString().data(), false);
 
     // Find the first audio stream
     audioStream=-1;
@@ -265,7 +267,8 @@ void FFmpegPlayer::run()
     wanted_spec.callback = fill_audio;
     wanted_spec.userdata = pCodecCtx;
 
-    if (SDL_OpenAudio(&wanted_spec, NULL)<0){
+    if (SDL_OpenAudio(&wanted_spec, NULL)<0)
+    {
         qDebug()<<"can't open audio.\n";
         FreeAllocMemory();
         emit sig_CurrentMediaError();
@@ -290,49 +293,59 @@ void FFmpegPlayer::run()
 
     av_seek_frame(pFormatCtx, audioStream, 0, NULL);
    // pFormatCtx->streams[audioStream]->cur_dts=0;
-    while(av_read_frame(pFormatCtx, packet)>=0){
-        if(packet->stream_index==audioStream){
-                int ret = avcodec_decode_audio4( pCodecCtx, pFrame,&got_picture, packet);
-                if ( ret < 0 ) {
-                    qDebug()<<"Error in decoding audio frame  or quit signal.\n";
-                    break ;
-                }
-                if ( got_picture > 0 )
-                    swr_convert(au_convert_ctx,&out_buffer, MAX_AUDIO_FRAME_SIZE,(const uint8_t **)pFrame->data , pFrame->nb_samples);
-
-                //seek action ,users do this
-                if(m_seek_request)
-                {
-                    AVRational aVRational = {1, AV_TIME_BASE};
-                    if (audioStream >= 0)
-                    m_seekTime = av_rescale_q(m_seekTime, aVRational,
-                                pFormatCtx->streams[audioStream]->time_base);
-
-                    if (av_seek_frame(pFormatCtx, audioStream, (int64_t)m_seekTime, NULL) < 0)
-                        qDebug()<<"%s: error while seeking\n";
-                    m_seek_request=false;
-                }
-#if USE_SDL
-                while(audio_len>0)//Wait until finish
-                    SDL_Delay(1);
-
-                //Set audio buffer (PCM data)
-                audio_chunk = (Uint8 *) out_buffer;
-                //Audio buffer length
-                audio_len =out_buffer_size;
-                audio_pos = audio_chunk;
-
-                //Play
-                SDL_PauseAudio(0);
-                isBuffering=false;
-#endif
-        }
-        if(packet)
+    while(true)
+    {
+        if(isquit)
+            break;
+        if(av_read_frame(pFormatCtx, packet)==0)
         {
-            av_free_packet(packet);
+            if(isquit)
+                break;
+            if(packet->stream_index==audioStream)
+            {
+                    int ret = avcodec_decode_audio4( pCodecCtx, pFrame,&got_picture, packet);
+                    if ( ret < 0 ) {
+                        qDebug()<<"Error in decoding audio frame  or quit signal.\n";
+                        break ;
+                    }
+                    if ( got_picture > 0 )
+                        swr_convert(au_convert_ctx,&out_buffer, MAX_AUDIO_FRAME_SIZE,(const uint8_t **)pFrame->data , pFrame->nb_samples);
+
+                    //seek action ,users do this
+                    if(m_seek_request)
+                    {
+                        AVRational aVRational = {1, AV_TIME_BASE};
+                        if (audioStream >= 0)
+                        m_seekTime = av_rescale_q(m_seekTime, aVRational,
+                                    pFormatCtx->streams[audioStream]->time_base);
+
+                        if (av_seek_frame(pFormatCtx, audioStream, (int64_t)m_seekTime, NULL) < 0)
+                            qDebug()<<"%s: error while seeking\n";
+                        m_seek_request=false;
+                    }
+    #if USE_SDL
+                    while(audio_len>0)//Wait until finish
+                        SDL_Delay(1);
+
+                    //Set audio buffer (PCM data)
+                    audio_chunk = (Uint8 *) out_buffer;
+                    //Audio buffer length
+                    audio_len =out_buffer_size;
+                    audio_pos = audio_chunk;
+                    //Play
+                    SDL_PauseAudio(0);
+                    isBuffering=false;
+    #endif
+            }
+            if(packet)
+            {
+                av_free_packet(packet);
+            }
         }
+
     }
     FreeAllocMemory();
+    if(!isquit)
     emit sig_CurrentMediaFinished();
 }
 
@@ -359,6 +372,5 @@ void FFmpegPlayer::FreeAllocMemory()
     out_buffer=NULL;
     pCodecCtx=NULL;
     pFormatCtx=NULL;
-
 }
 
