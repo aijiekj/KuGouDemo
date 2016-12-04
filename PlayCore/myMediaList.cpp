@@ -3,7 +3,7 @@
 #include<tableWidgetFiles/mytablewidget.h>
 myMediaList::myMediaList(QObject *parent) : QObject(parent)
 {
-    musicIndex=0;
+    m_musicIndex=0;
     m_list.empty();
     setPlayMode(PlayMode::playInOrder);
 }
@@ -12,8 +12,8 @@ QUrl myMediaList::mediaUrl(int index)
 {
     if(m_list.isEmpty())
     return QUrl("");
-     musicIndex=index;
-    return m_list.at(index);
+     m_musicIndex=index;
+    return m_list.value(index);
 }
 void myMediaList::setPlayMode(PlayMode p)
 {
@@ -28,20 +28,20 @@ int myMediaList::nextMediaIndex()//下一曲
 {
     switch (indexMode) {
     case 0://playInOrder
-      if(musicIndex+1>=m_list.count())//在最后一行了的话
-          musicIndex=0;
+      if(m_musicIndex+1>=m_list.count())//在最后一行了的话
+          m_musicIndex=0;
       else
-          musicIndex++;
+          m_musicIndex++;
     break;
 
     case 1://playRandom
         QTime time= QTime::currentTime();
         qsrand(time.msec()+time.second()*1000);
         int xxx=qrand()%m_list.count();
-        musicIndex=xxx;
+        m_musicIndex=xxx;
     break;
     }
-    return musicIndex;
+    return m_musicIndex;
 }
 
 int myMediaList::preMediaIndex()//上一曲
@@ -49,20 +49,20 @@ int myMediaList::preMediaIndex()//上一曲
     switch (indexMode)
     {
         case 0://playInOrder
-          if(musicIndex==0)//在第一行了的话
-              musicIndex=0;
+          if(m_musicIndex==0)//在第一行了的话
+              m_musicIndex=0;
           else
-              musicIndex--;
+              m_musicIndex--;
             break;
 
         case 1://playRandom
             QTime time= QTime::currentTime();
             qsrand(time.msec()+time.second()*1000);
             int xxx=qrand()%m_list.count();
-            musicIndex=xxx;
+            m_musicIndex=xxx;
             break;
     }
-    return musicIndex;
+    return m_musicIndex;
 }
 void myMediaList::slot_removeSong(int index)
 {
@@ -71,7 +71,7 @@ void myMediaList::slot_removeSong(int index)
     int PlayWidindex=t->currentSongIndex();
     if(PlayWidindex>=index)
     {
-        musicIndex--;
+        m_musicIndex--;
     }
 
 }

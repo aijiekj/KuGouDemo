@@ -5,8 +5,9 @@
 #include <QWidget>
 #include<QStackedWidget>
 #include<QLineEdit>
-
+#include<QLabel>
 //#include"WebWidget.h"
+#include"MvWidget.h"
 #include"baseWidget.h"
 class mainWindow;
 class middleSearchWidget;
@@ -37,6 +38,7 @@ public slots:
    void slot_setLrcShowStack();
    void slot_btnClick();
    void slot_curStackChange(int);
+   void slot_imageMV(QImage);
 protected:
    void resizeEvent(QResizeEvent*);
     void paintEvent(QPaintEvent *);
@@ -46,6 +48,7 @@ signals:
 private:
    bool m_isdrawline;
 
+   MvWidget *m_MvWid;
    QVector<myPushButton*> m_listbtn;
    middleWidgets *m_middlewidget;
    mainWindow *m_mainWindow;

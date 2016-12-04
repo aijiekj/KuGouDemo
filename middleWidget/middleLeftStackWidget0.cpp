@@ -310,6 +310,9 @@ void middleLeftStackWidget0::setPlayListConnection()
         disconnect(m_Vector.at(i)->m_table,SIGNAL(sig_play(int)),this,SLOT(slot_playIndex(int)));//播放triggered
         connect(m_Vector.at(i)->m_table,SIGNAL(sig_play(int)),this,SLOT(slot_playIndex(int)));
 
+        disconnect(m_Vector.at(i)->m_table,SIGNAL(sig_playMv(int)),this,SLOT(slot_playIndex(int)));//播放MV!!
+        connect(m_Vector.at(i)->m_table,SIGNAL(sig_playMv(int)),this,SLOT(slot_playIndex(int)));
+
        disconnect(m_Vector.at(i)->m_table->m_playingWid,SIGNAL(sig_clicked(QString)),m_mainWindow->middleWidget()->m_rightWid,SLOT(slot_search(QString)));//clickand 搜索
        connect(m_Vector.at(i)->m_table->m_playingWid,SIGNAL(sig_clicked(QString)),m_mainWindow->middleWidget()->m_rightWid,SLOT(slot_search(QString)));//搜索
 
@@ -365,10 +368,15 @@ void middleLeftStackWidget0::setListTakeAndInsert(myTablePlayListFinal *from, my
     */
 }
 
+void middleLeftStackWidget0::slot_playMVIndex(int index)
+{
+    m_nowplayfinaltable=(myTablePlayListFinal*)sender()->parent();
+    m_nowplayfinaltable->playList()->setCurIndex(index); //用于MV播放完了~知道自己的位置
+}
+
 void middleLeftStackWidget0::slot_showMvWidget(const QString & url)
 {
- //   m_mainWindow->player()->setMedia(url);
-  //  m_mainWindow->player()->setVideoWidget((void*)NULL);
+    m_mainWindow->player()->setMedia(url);
 }
 
 void middleLeftStackWidget0::slot_searchSong(const QString &words)

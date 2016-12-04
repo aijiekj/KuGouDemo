@@ -37,6 +37,7 @@ mainWindow::mainWindow(QWidget *parent):baseWindow(parent)//设置背景就设�
      setMinimumSize(1008,698);
      m_mainwid->setStyleSheet("QLabel{color:white;}");//"Widget{background: rgb(0,140,230);}"//border-image:url(:/image/skin/1.png)
 
+
      initLayout();//加载主要的layout
      initMediaPlayer();
      initNetwork();
@@ -122,6 +123,7 @@ int mainWindow::curVol()
 void mainWindow::setCurVol(int value)
 {
     m_volwid->m_slider->setValue(value);
+
     m_ffplayer->setVol(value);
 }
 
@@ -282,6 +284,7 @@ void mainWindow::initConnection()
     connect(m_middwid->m_rightWid->m_lrcwid, SIGNAL(changeToPosition(qint64)), m_ffplayer,SLOT(seek(qint64)));
     connect(m_ffplayer,SIGNAL(sig_CurrentMediaStatus(PlayerStatus)),this,SLOT(slot_playerStatusChanged(PlayerStatus)));
     connect(m_ffplayer,SIGNAL(sig_CurrentMediaFinished()),m_midstack0,SLOT(slot_endOfMedia()));
+    connect(m_ffplayer,SIGNAL(sig_CurImageChange(QImage)),m_middwid->m_rightWid,SLOT(slot_imageMV(QImage)));
 
     connect(m_bottomwid->m_btnnext,SIGNAL(clicked(bool)),m_midstack0,SLOT(slot_btnnextSong()));
     connect(m_bottomwid->m_btnprevious,SIGNAL(clicked(bool)),m_midstack0,SLOT(slot_btnpreSong()));
@@ -309,6 +312,7 @@ void mainWindow::slot_currentMediaChanged(const QString &media)//setnowplaytext
     myTablePlayListFinal*finalwid=m_midstack0->nowPlayFinalTable();
     if(media.isEmpty()||!m_midstack0->nowPlayFinalTable())//如果为空
         return;
+
     foreach(myTablePlayListFinal*f,m_midstack0->myTablePlayListFinalVector())
     {
         disconnect(f->m_table,SIGNAL(sig_setLoveState(bool)),m_bottomwid,SLOT(slot_setLoveState(bool)));

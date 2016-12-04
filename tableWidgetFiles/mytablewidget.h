@@ -69,7 +69,7 @@ public Q_SLOTS:
      void slot_removeRow();
      void slot_cellEnter(int,int);
      void slot_animation(QVariant&);
-     void slot_doublick(int r,int);
+     void slot_doublick(int r,int,bool isMv=0);
      void slot_menuRequest(QPoint);//
      void slot_moveToPList();
      void slot_playingWidgetDelBtnClicked();
@@ -78,6 +78,7 @@ signals:
      void sig_requestMv(QString);
      void sig_setLoveState(bool);
 
+     void sig_playMv(int);
      void sig_play(int);
      void sig_delIndex(int);
 

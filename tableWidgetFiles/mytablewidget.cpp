@@ -269,9 +269,10 @@ void myTableWidget::mouseReleaseEvent(QMouseEvent *event)
 void myTableWidget::slot_mvclicked()
 {
     QString mvname= item(m_prebgItem,1)->text();
+    slot_doublick(m_prebgItem,1,true); //mv
     emit sig_requestMv(mvname);
     qDebug()<<mvname;
-   // emit sig_mv
+
 }
 
 void myTableWidget::slot_playingWidgetLoveBtnClicked()  //this slot is used by playingwidget's lovebtn
@@ -283,7 +284,7 @@ void myTableWidget::slot_playingWidgetLoveBtnClicked()  //this slot is used by p
    if(plovelist==m_finalWidget)//if this table is the nowplaytable
    {
        removeSong(index);
-       m_middleftStack0->showRemovetips(); //show the tips that remove successfully
+       m_middleftStack0->showRemovetips(); //show the tips that removed successfully
        emit sig_setLoveState(true);
    }
    else//need to add or delete
@@ -331,7 +332,7 @@ void myTableWidget::initPlayingWidget()
     connect(m_playingWid->m_btnLove,SIGNAL(clicked(bool)),this,SLOT(slot_playingWidgetLoveBtnClicked()));
 
 }
-void myTableWidget::slot_doublick(int r, int c)
+void myTableWidget::slot_doublick(int r, int c,bool isMv)
 {
     if(rowCount()==0)
         return;
@@ -364,7 +365,11 @@ void myTableWidget::slot_doublick(int r, int c)
         m_playingWid->setSongName(item(r,1)->text());
         m_playingWid->show();
         updatePlayingWidgetPos();
-        emit sig_play(r);
+
+        if(isMv)
+            emit sig_playMv(r);
+        else
+            emit sig_play(r);
 
        if(m_middleftStack0->myTablePlayListFinalVector().last()->songUrlList().contains(m_finalWidget->songUrlList().value(r)))
        {
@@ -561,7 +566,6 @@ void myTableWidget::slot_cellEnter(int row, int c)
         {
             m_crossWid=new pushButtonCrossWidget(this);
             m_groupWid=new pushButtonGroupWidget(this);
-
             if(m_middleftStack0->myTablePlayListFinalVector().last()==m_finalWidget)//如果是正在我的最爱列表  全部都是红色的
             {
                 m_groupWid->setLoved();

@@ -380,8 +380,7 @@ void MyNetWork::requestMv(const QString &mvname)
     QByteArray byt=QString(mvname).replace("&"," ").toUtf8().toPercentEncoding();
     QNetworkRequest request;
     QNetworkAccessManager manger;
-    QString url=QString("http://itwusun.com/search/wy/%1?&f=json&size=5&sign=itwusun").arg(QString(byt));
-    request.setUrl(url);
+    request.setUrl(ITWUSUN.arg(1).arg(QString(byt)));
     QNetworkReply *reply1= manger.get(request);
 ///loop1
     QEventLoop loop1;

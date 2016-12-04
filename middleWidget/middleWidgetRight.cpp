@@ -11,7 +11,7 @@
 #include"mainwindow.h"
 #include"middleWidgets.h"
 
-
+#include"Global_ValueGather.h"
 QColor middleWidgetRight::bgcolor= QColor(230,230,230);//初始化
 
 middleWidgetRight::middleWidgetRight(QWidget*parent):baseWidget(parent)
@@ -60,21 +60,22 @@ void middleWidgetRight::init()
         m_web4->m_web->show();
 
  #else
+
+
         m_stackWid->addWidget(new baseWidget(this));
         m_stackWid->addWidget(new baseWidget(this));
         m_stackWid->addWidget(new baseWidget(this));
         m_stackWid->addWidget(new baseWidget(this));
-        m_stackWid->addWidget(new baseWidget(this));
+        m_stackWid->addWidget(m_MvWid=new MvWidget(this));
         m_stackWid->addWidget(m_lrcwid=new LyricLabel(false,this));
         m_stackWid->addWidget(m_searchwid=new middleSearchWidget(this));
-
 #endif
 
     myPushButton *m_btn=new myPushButton("乐库",this);
     myPushButton *m_btn1=new myPushButton("电台",this);
     myPushButton *m_btn2=new myPushButton("歌单",this);
-    myPushButton *m_btn3=new myPushButton("MV",this);
-    myPushButton *m_btn4=new myPushButton("直播",this);
+    myPushButton *m_btn3=new myPushButton("直播",this);
+    myPushButton *m_btn4=new myPushButton("MV",this);
     myPushButton *m_btn5=new myPushButton("歌词",this);
 
     m_btn->setFixedSize(54,40);
@@ -164,7 +165,6 @@ void middleWidgetRight::slot_setLrcShowStack()
         m_stackWid->setCurrentIndex(5);
 }
 
-
 void middleWidgetRight::resizeEvent(QResizeEvent *e)
 {
     baseWidget::resizeEvent(e);
@@ -213,6 +213,11 @@ void middleWidgetRight::slot_curStackChange(int index)
          setDrawLine(true);
          update();
     }
+}
+
+void middleWidgetRight::slot_imageMV(QImage img)
+{
+    m_MvWid->setImage(img);
 }
 void middleWidgetRight::slot_btnClick()
 {

@@ -13,7 +13,7 @@ baseWidget::baseWidget(QWidget *parent) : QWidget(parent)
 }
 void baseWidget::paintEvent(QPaintEvent *e)
 {
-    QWidget::paintEvent(e);
+   // QWidget::paintEvent(e);
     QStyleOption opt;
     opt.init(this);
     QPainter p(this);

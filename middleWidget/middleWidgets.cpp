@@ -8,7 +8,7 @@
 #include<QPainter>
 middleWidgets::middleWidgets(QWidget *parent) : baseWidget(parent)
 {
-    setStyleSheet("background:white;");
+    setStyleSheet("baseWidget{background:white;}");
     initLayout();
 
 

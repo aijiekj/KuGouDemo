@@ -64,6 +64,7 @@ public:
 
     baseWidget *m_wid;
 public Q_SLOTS:
+    void slot_playMVIndex(int);
     void slot_showMvWidget(const QString&);
     void slot_searchSong(const QString&);
     void scrolltoCurrentPlayList();

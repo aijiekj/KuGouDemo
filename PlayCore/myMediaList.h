@@ -13,7 +13,7 @@ public:
     inline  void addPlayList(const QUrl& url){m_list.append(url);}
 
     void setPlayMode(PlayMode);
-
+    void setCurIndex(int index){m_musicIndex=index;}
     int nextMediaIndex();
     int preMediaIndex();
 
@@ -23,7 +23,7 @@ public Q_SLOTS:
 signals:
 private:
     int indexMode;
-    int musicIndex;
+    int m_musicIndex;
 
 
 };
